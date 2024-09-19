@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
-import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import {FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton} from '@mui/material';
 import {Visibility, VisibilityOff} from '@mui/icons-material';
 
 function Register() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
+
   const handleClickShowPassword = () => setShowPassword(!showPassword);
+
   const handleMouseDownPassword = (event) => event.preventDefault();
+
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const response = await fetch('https://fplv3-backend.onrender.com/register', {
+      const response = await fetch(`${apiUrl}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,6 +36,8 @@ function Register() {
       }
     } catch (error) {
       setMessage('Error registering');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,7 +95,7 @@ function Register() {
                             required="required"/>
                     </FormControl>
         </div>
-        <Button type="submit" variant="contained">Register</Button>
+        <LoadingButton type="submit" variant="contained" loading={loading}>Register</LoadingButton>
       </form>
       {message && <p>{message}</p>}
     </div>
